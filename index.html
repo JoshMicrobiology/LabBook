@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Science Lab Book</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & base ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue-900: #0D2137;
+  --blue-800: #1565C0;
+  --blue-700: #1976D2;
+  --blue-600: #1E88E5;
+  --blue-400: #42A5F5;
+  --blue-200: #BBDEFB;
+  --blue-100: #E3F2FD;
+  --blue-50:  #F0F8FF;
+  --white:    #FFFFFF;
+  --muted:    #546E7A;
+  --input-bg: #F8FBFF;
+  --border:   #90CAF9;
+  --danger:   #D32F2F;
+  --danger-h: #B71C1C;
+  --green:    #2E7D32;
+  --shadow-sm: 0 1px 4px rgba(21,101,192,.10);
+  --shadow-md: 0 4px 16px rgba(21,101,192,.14);
+  --shadow-lg: 0 8px 32px rgba(21,101,192,.18);
+  --radius:   10px;
+  --sidebar-w: 230px;
+  --transition: .18s ease;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--blue-50);
+  color: var(--blue-900);
+  display: flex;
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--blue-800);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+}
+
+.sidebar-logo {
+  text-align: center;
+  padding: 30px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.sidebar-logo .emoji { font-size: 44px; display: block; margin-bottom: 6px; }
+.sidebar-logo h1 {
+  font-family: 'DM Serif Display', serif;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: .3px;
+}
+.sidebar-logo p { color: var(--blue-200); font-size: 12px; margin-top: 2px; }
+
+.nav-section { padding: 14px 0 4px; }
+.nav-label {
+  color: rgba(255,255,255,.45);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 0 20px 6px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.88);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition), color var(--transition);
+  border-left: 3px solid transparent;
+}
+.nav-btn:hover, .nav-btn.active {
+  background: rgba(255,255,255,.10);
+  color: #fff;
+  border-left-color: var(--blue-400);
+}
+.nav-btn .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.sidebar-actions {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform .1s, box-shadow var(--transition);
+  white-space: nowrap;
+}
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--blue-600); color: #fff; }
+.btn-primary:hover { background: var(--blue-800); box-shadow: var(--shadow-sm); }
+.btn-sidebar { background: rgba(255,255,255,.12); color: #fff; width: 100%; justify-content: flex-start; font-size: 13px; padding: 9px 14px; }
+.btn-sidebar:hover { background: rgba(255,255,255,.22); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-h); }
+.btn-ghost { background: var(--blue-100); color: var(--blue-800); }
+.btn-ghost:hover { background: var(--blue-200); }
+.btn-sm { padding: 6px 12px; font-size: 12.5px; }
+.btn-add { background: var(--blue-600); color: #fff; }
+.btn-add:hover { background: var(--blue-800); }
+.btn-remove { background: #FFEBEE; color: var(--danger); }
+.btn-remove:hover { background: #FFCDD2; }
+
+/* ── Main content ─────────────────────────────────────────────────────── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#topbar {
+  background: var(--blue-700);
+  color: #fff;
+  padding: 0 32px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-md);
+}
+#topbar h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: .3px;
+}
+#save-status {
+  font-size: 13px;
+  opacity: .9;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#save-status .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #FFD54F;
+  display: inline-block;
+}
+#save-status.saved .dot { background: #A5D6A7; }
+
+#content {
+  padding: 28px 32px 60px;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Section cards ────────────────────────────────────────────────────── */
+.section-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--blue-200);
+  overflow: hidden;
+  transition: box-shadow var(--transition);
+}
+.section-card:hover { box-shadow: var(--shadow-md); }
+
+.section-header {
+  background: var(--blue-700);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-header .icon-canvas {
+  width: 38px; height: 38px;
+  flex-shrink: 0;
+}
+.section-title-group { flex: 1; }
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title .icon { font-size: 18px; }
+.badge {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 20px;
+  letter-spacing: .4px;
+}
+.badge-req  { background: rgba(255,255,255,.22); color: #fff; }
+.badge-opt  { background: rgba(187,222,251,.28); color: var(--blue-200); }
+
+.section-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Sub-labels ───────────────────────────────────────────────────────── */
+.sub-label {
+  display: block;
+  background: var(--blue-100);
+  color: var(--blue-800);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 5px;
+  margin-bottom: 6px;
+  border-left: 3px solid var(--blue-400);
+  letter-spacing: .2px;
+}
+
+/* ── Form inputs ──────────────────────────────────────────────────────── */
+.field-group { display: flex; flex-direction: column; }
+
+input[type="text"], input[type="date"], textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  background: var(--input-bg);
+  color: var(--blue-900);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+input[type="text"]:focus, textarea:focus {
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 3px rgba(30,136,229,.15);
+}
+textarea {
+  resize: vertical;
+  line-height: 1.65;
+  min-height: 90px;
+}
+textarea.mono { font-family: 'Courier New', monospace; font-size: 13.5px; }
+::placeholder { color: #90A4AE; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+/* ── Materials table ──────────────────────────────────────────────────── */
+.mat-header {
+  display: grid;
+  grid-template-columns: 1fr 160px 190px 42px;
+  gap: 8px;
+  padding: 0 4px 4px;
+}
+.mat-header span {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--blue-700);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+.mat-row {
+  display: grid;
+  grid-template-columns: 1fr 160px 190px 42px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  animation: fadeIn .2s ease;
+}
+.mat-row input { margin: 0; }
+.mat-row .row-num {
+  display: none;
+}
+.row-del {
+  width: 38px; height: 38px;
+  border: none;
+  border-radius: 7px;
+  background: #FFEBEE;
+  color: var(--danger);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.row-del:hover { background: #FFCDD2; }
+
+/* ── Procedure list ───────────────────────────────────────────────────── */
+.proc-row {
+  display: grid;
+  grid-template-columns: 34px 1fr 42px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  animation: fadeIn .2s ease;
+}
+.proc-num {
+  width: 34px; height: 38px;
+  background: var(--blue-800);
+  color: #fff;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.proc-row input { margin: 0; }
+
+/* ── Row toolbar ──────────────────────────────────────────────────────── */
+.row-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+/* ── Photo gallery ────────────────────────────────────────────────────── */
+.photo-area {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--blue-50);
+  transition: border-color var(--transition), background var(--transition);
+}
+.photo-area.drag-over {
+  border-color: var(--blue-600);
+  background: var(--blue-100);
+}
+.photo-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.photo-thumb {
+  position: relative;
+  width: 110px;
+  animation: fadeIn .25s ease;
+}
+.photo-thumb img {
+  width: 110px; height: 90px;
+  object-fit: cover;
+  border-radius: 7px;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.photo-thumb img:hover { transform: scale(1.04); box-shadow: var(--shadow-md); }
+.photo-thumb .thumb-name {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.photo-thumb .thumb-del {
+  position: absolute;
+  top: -6px; right: -6px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition), transform .1s;
+}
+.photo-thumb .thumb-del:hover { background: var(--danger-h); transform: scale(1.1); }
+.photo-empty { color: var(--muted); font-size: 13.5px; text-align: center; padding: 12px 0 4px; }
+
+/* ── Lightbox ─────────────────────────────────────────────────────────── */
+#lightbox {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+#lightbox.open { display: flex; }
+#lightbox img {
+  max-width: 90vw; max-height: 88vh;
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+}
+#lightbox-close {
+  position: absolute;
+  top: 18px; right: 22px;
+  background: rgba(255,255,255,.2);
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+#lightbox-close:hover { background: rgba(255,255,255,.35); }
+
+/* ── Toast ────────────────────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  background: var(--blue-900);
+  color: #fff;
+  padding: 13px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: var(--shadow-lg);
+  z-index: 500;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+  max-width: 320px;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.success { background: var(--green); }
+#toast.error   { background: var(--danger); }
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+#footer {
+  background: var(--white);
+  border-top: 1px solid var(--blue-200);
+  text-align: center;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: var(--sidebar-w);
+}
+
+/* ── Animations ───────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.section-card { animation: fadeIn .35s ease both; }
+.section-card:nth-child(2) { animation-delay: .04s; }
+.section-card:nth-child(3) { animation-delay: .08s; }
+.section-card:nth-child(4) { animation-delay: .12s; }
+.section-card:nth-child(5) { animation-delay: .16s; }
+.section-card:nth-child(6) { animation-delay: .20s; }
+.section-card:nth-child(7) { animation-delay: .24s; }
+.section-card:nth-child(8) { animation-delay: .28s; }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    width: 220px;
+  }
+  #sidebar.open { transform: translateX(0); --sidebar-w: 220px; }
+  #main, #footer { margin-left: 0; }
+  #menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,.2);
+    border: none;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    width: 40px; height: 40px;
+    border-radius: 7px;
+  }
+  #content { padding: 16px 14px 60px; }
+  .mat-header, .mat-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .mat-header span:nth-child(3),
+  .mat-header span:nth-child(4) { display: none; }
+  .mat-row input:nth-child(3) { grid-column: 1 / -2; }
+  .mat-row .row-del { grid-row: 1 / 3; grid-column: 2; align-self: center; }
+  .two-col { grid-template-columns: 1fr; }
+  #topbar { padding: 0 16px; }
+}
+@media (min-width: 769px) {
+  #menu-toggle { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <span class="emoji">🔬</span>
+    <h1>Lab Book</h1>
+    <p>Science Notebook</p>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Sections</div>
+    <button class="nav-btn" onclick="scrollTo('s-title')">
+      <span class="nav-icon">📋</span> Title &amp; Date
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-obj')">
+      <span class="nav-icon">🎯</span> Objective
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-mat')">
+      <span class="nav-icon">🧪</span> Materials
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-proc')">
+      <span class="nav-icon">📝</span> Procedure
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-res')">
+      <span class="nav-icon">📊</span> Results
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-calc')">
+      <span class="nav-icon">🧮</span> Calculations
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-conc')">
+      <span class="nav-icon">📄</span> Conclusion
+    </button>
+    <button class="nav-btn" onclick="scrollTo('s-disc')">
+      <span class="nav-icon">💬</span> Discussion
+    </button>
+  </div>
+
+  <div class="sidebar-actions">
+    <div class="nav-label" style="padding:0 0 8px;">Actions</div>
+    <button class="btn btn-sidebar" onclick="saveJSON()">💾 Save (Ctrl+S)</button>
+    <button class="btn btn-sidebar" onclick="loadJSON()">📂 Open</button>
+    <button class="btn btn-sidebar" onclick="exportRTF()">📝 Export to Word</button>
+    <button class="btn btn-sidebar" onclick="exportTXT()">📄 Export to TXT</button>
+    <button class="btn btn-sidebar btn-danger" style="margin-top:8px" onclick="clearAll()">🗑️ Clear All</button>
+  </div>
+</nav>
+
+<!-- ── Top bar ─────────────────────────────────────────────────────────── -->
+<div id="main">
+<header id="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <h2>Science Lab Book</h2>
+  </div>
+  <div id="save-status">
+    <span class="dot"></span>
+    <span id="status-text">Unsaved</span>
+  </div>
+</header>
+
+<!-- ── Main content ────────────────────────────────────────────────────── -->
+<main id="content">
+
+  <!-- ① Title & Date -->
+  <div class="section-card" id="s-title">
+    <div class="section-header">
+      <div class="section-title-group">
+        <div class="section-title">
+          <span class="icon">📋</span>
+          1 · Descriptive Title &amp; Date
+          <span class="badge badge-req">Required</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="field-group">
+        <label class="sub-label">Experiment Title</label>
+        <input type="text" id="f-title" placeholder="e.g. Effect of Temperature on Enzyme Activity">
+      </div>
+      <div class="two-col">
+        <div class="field-group">
+          <label class="sub-label">Date</label>
+          <input type="text" id="f-date" placeholder="e.g. 13 May 2026">
+        </div>
+        <div class="field-group">
+          <label class="sub-label">Class / Course</label>
+          <input type="text" id="f-class" placeholder="e.g. Biology 101 – Grade 11">
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="field-group">
+          <label class="sub-label">Student Name(s)</label>
+          <input type="text" id="f-student" placeholder="e.g. Jane Smith, John Doe">
+        </div>
+        <div class="field-group">
+          <label class="sub-label">Student Number(s) ◇ Optional</label>
+          <input type="text" id="f-stnum" placeholder="e.g. 12345678">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② Objective -->
+  <div class="section-card" id="s-obj">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">🎯</span>
+        2 · Objective / Purpose
+        <span class="badge badge-req">Required</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="field-group">
+        <label class="sub-label">What is the aim of this experiment?</label>
+        <textarea id="f-objective" rows="4" placeholder="State the purpose of this experiment clearly…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="sub-label">Hypothesis (prediction)</label>
+        <textarea id="f-hypothesis" rows="3" placeholder="If… then… because…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ Materials & Reagents -->
+  <div class="section-card" id="s-mat">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">🧪</span>
+        3 · Materials &amp; Reagents
+        <span class="badge badge-req">Required</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <label class="sub-label">Fill in name, quantity, and concentration for each item</label>
+      <div class="mat-header">
+        <span>Material / Reagent</span>
+        <span>Quantity</span>
+        <span>Concentration <em style="font-weight:400;opacity:.7">(optional)</em></span>
+        <span></span>
+      </div>
+      <div id="mat-rows"></div>
+      <div class="row-toolbar">
+        <button class="btn btn-add btn-sm" onclick="addMatRow()">+ Add material</button>
+      </div>
+      <p class="hint">Leave Concentration blank if not applicable.</p>
+    </div>
+  </div>
+
+  <!-- ④ Procedure -->
+  <div class="section-card" id="s-proc">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">📝</span>
+        4 · Procedure
+        <span class="badge badge-req">Required</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <label class="sub-label">Step-by-step method</label>
+      <div id="proc-rows"></div>
+      <div class="row-toolbar">
+        <button class="btn btn-add btn-sm" onclick="addProcRow()">+ Add step</button>
+      </div>
+      <div class="field-group" style="margin-top:10px">
+        <label class="sub-label">Safety Precautions</label>
+        <textarea id="f-safety" rows="2" placeholder="e.g. Wear gloves and goggles. Handle acids with care."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ Results & Observations -->
+  <div class="section-card" id="s-res">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">📊</span>
+        5 · Results &amp; Observations
+        <span class="badge badge-req">Required</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="field-group">
+        <label class="sub-label">Qualitative Observations</label>
+        <textarea id="f-qual" rows="3" placeholder="Describe what you saw, heard, smelt or felt…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="sub-label">Quantitative Data / Data Table</label>
+        <textarea id="f-quant" rows="6" class="mono" placeholder="Temp (°C)    Rate (mL/s)&#10;20           0.12&#10;30           0.24&#10;40           0.45"></textarea>
+        <p class="hint">Use spaces to align columns.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ Calculations -->
+  <div class="section-card" id="s-calc">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">🧮</span>
+        6 · Calculations
+        <span class="badge badge-opt">Optional</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="field-group">
+        <label class="sub-label">Written calculations, formulas, and worked examples</label>
+        <textarea id="f-calc" rows="6" class="mono" placeholder="Average rate = total volume / time&#10;= 15 mL / 120 s&#10;= 0.125 mL/s"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="sub-label">Attach Formula / Handwritten Photo(s) ◇ Optional</label>
+        <div class="photo-area" id="photo-drop" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('photo-input').click()">
+              📷 Attach Images
+            </button>
+            <span style="font-size:12.5px;color:var(--muted)">or drag &amp; drop images here</span>
+          </div>
+          <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="onPhotoSelect(event)">
+          <div class="photo-thumbs" id="photo-thumbs">
+            <p class="photo-empty" id="photo-empty">No images attached yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ Conclusion -->
+  <div class="section-card" id="s-conc">
+    <div class="section-header">
+      <div style="display:flex;align-items:center;gap:12px;flex:1">
+        <!-- Custom SVG icon: document + magnifier with check -->
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Document body -->
+          <rect x="3" y="2" width="20" height="32" rx="2" fill="white" fill-opacity="0.92" stroke="#90CAF9" stroke-width="1"/>
+          <!-- Folded corner -->
+          <path d="M17 2 L23 2 L23 8 Z" fill="#BBDEFB"/>
+          <path d="M17 2 L17 8 L23 8" stroke="#90CAF9" stroke-width="1" fill="none"/>
+          <!-- Text lines -->
+          <line x1="7" y1="12" x2="17" y2="12" stroke="#90CAF9" stroke-width="1.2"/>
+          <line x1="7" y1="16" x2="17" y2="16" stroke="#90CAF9" stroke-width="1.2"/>
+          <line x1="7" y1="20" x2="17" y2="20" stroke="#90CAF9" stroke-width="1.2"/>
+          <line x1="7" y1="24" x2="14" y2="24" stroke="#90CAF9" stroke-width="1.2"/>
+          <!-- Magnifier lens -->
+          <circle cx="27" cy="27" r="8.5" fill="#1565C0" stroke="white" stroke-width="2"/>
+          <!-- Checkmark inside lens -->
+          <polyline points="23,27 26,30 32,23" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Handle -->
+          <line x1="33.5" y1="33.5" x2="37" y2="37" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div class="section-title">
+            7 · Conclusion
+            <span class="badge badge-req">Required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="field-group">
+        <label class="sub-label">Was the hypothesis supported? Summarise your findings.</label>
+        <textarea id="f-conclusion" rows="5" placeholder="The hypothesis was / was not supported because…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="sub-label">Sources of Error</label>
+        <textarea id="f-errors" rows="3" placeholder="e.g. Parallax error when reading the burette…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="sub-label">Suggested Improvements for Future Experiments</label>
+        <textarea id="f-improvements" rows="3" placeholder="e.g. Use a digital thermometer for more accurate readings…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧ Discussion -->
+  <div class="section-card" id="s-disc">
+    <div class="section-header">
+      <div class="section-title">
+        <span class="icon">💬</span>
+        8 · Discussion
+        <span class="badge badge-opt">Optional</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="field-group">
+        <label class="sub-label">Relate results to theory, literature, and real-world applications</label>
+        <textarea id="f-discussion" rows="6" placeholder="Your results show… which aligns with / contradicts… because…"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="sub-label">References / Bibliography</label>
+        <textarea id="f-references" rows="3" placeholder="e.g. Smith, J. (2024). Enzyme Kinetics. Journal of Biology, 12(3), 45–58."></textarea>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer id="footer">
+  Science Lab Book &nbsp;•&nbsp;
+  Use <strong>Save</strong> to keep your work &nbsp;•&nbsp;
+  <strong>Export to Word</strong> saves an .rtf file that opens in Microsoft Word, LibreOffice &amp; Google Docs
+</footer>
+</div><!-- end #main -->
+
+<!-- ── Lightbox ─────────────────────────────────────────────────────────── -->
+<div id="lightbox" onclick="closeLightbox(event)">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- ── Toast ───────────────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<!-- ── Hidden file input for open ──────────────────────────────────────── -->
+<input type="file" id="open-input" accept=".labbook,.json" style="display:none" onchange="onOpenFile(event)">
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+let photoFiles = [];   // {name, dataURL}
+let savedFileName = null;
+
+// ── Init ──────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setDateToday();
+  addMatRow();
+  addProcRow();
+  markUnsaved();
+
+  // auto-mark unsaved on any input
+  document.querySelectorAll('input, textarea').forEach(el => {
+    el.addEventListener('input', markUnsaved);
+  });
+});
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    saveJSON();
+  }
+});
+
+// ── Sidebar ───────────────────────────────────────────────────────────────
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ── Date helper ───────────────────────────────────────────────────────────
+function setDateToday() {
+  const d = new Date();
+  const months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+  document.getElementById('f-date').value =
+    `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ── Status ────────────────────────────────────────────────────────────────
+function markSaved(name) {
+  savedFileName = name;
+  const s = document.getElementById('save-status');
+  s.classList.add('saved');
+  document.getElementById('status-text').textContent = `Saved · ${name}`;
+}
+function markUnsaved() {
+  const s = document.getElementById('save-status');
+  s.classList.remove('saved');
+  document.getElementById('status-text').textContent = 'Unsaved';
+}
+
+// ── Materials rows ────────────────────────────────────────────────────────
+function addMatRow(name='', qty='', conc='') {
+  const container = document.getElementById('mat-rows');
+  const row = document.createElement('div');
+  row.className = 'mat-row';
+  row.innerHTML = `
+    <input type="text" placeholder="e.g. Hydrochloric acid" value="${esc(name)}">
+    <input type="text" placeholder="e.g. 25 mL" value="${esc(qty)}">
+    <input type="text" placeholder="e.g. 0.1 M" value="${esc(conc)}">
+    <button class="row-del" title="Remove row" onclick="removeRow(this)">✕</button>
+  `;
+  row.querySelectorAll('input').forEach(el => el.addEventListener('input', markUnsaved));
+  container.appendChild(row);
+}
+
+// ── Procedure rows ────────────────────────────────────────────────────────
+function addProcRow(value='') {
+  const container = document.getElementById('proc-rows');
+  const n = container.children.length + 1;
+  const row = document.createElement('div');
+  row.className = 'proc-row';
+  row.innerHTML = `
+    <div class="proc-num">${n}</div>
+    <input type="text" placeholder="Describe this step…" value="${esc(value)}">
+    <button class="row-del" title="Remove step" onclick="removeProcRow(this)">✕</button>
+  `;
+  row.querySelector('input').addEventListener('input', markUnsaved);
+  container.appendChild(row);
+}
+
+function removeProcRow(btn) {
+  btn.closest('.proc-row').remove();
+  renumberProc();
+  markUnsaved();
+}
+
+function renumberProc() {
+  document.querySelectorAll('#proc-rows .proc-num').forEach((el, i) => {
+    el.textContent = i + 1;
+  });
+}
+
+function removeRow(btn) {
+  btn.closest('.mat-row')?.remove() || btn.closest('.proc-row')?.remove();
+  markUnsaved();
+}
+
+// ── Photo handling ────────────────────────────────────────────────────────
+function onPhotoSelect(event) {
+  Array.from(event.target.files).forEach(readPhoto);
+  event.target.value = '';
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  document.getElementById('photo-drop').classList.add('drag-over');
+}
+function onDragLeave(e) {
+  document.getElementById('photo-drop').classList.remove('drag-over');
+}
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('photo-drop').classList.remove('drag-over');
+  Array.from(e.dataTransfer.files)
+    .filter(f => f.type.startsWith('image/'))
+    .forEach(readPhoto);
+}
+
+function readPhoto(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const entry = { name: file.name, dataURL: ev.target.result };
+    photoFiles.push(entry);
+    renderThumb(entry);
+    document.getElementById('photo-empty').style.display = 'none';
+    markUnsaved();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderThumb(entry) {
+  const thumbs = document.getElementById('photo-thumbs');
+  const cell   = document.createElement('div');
+  cell.className = 'photo-thumb';
+  cell.dataset.name = entry.name;
+  cell.innerHTML = `
+    <img src="${entry.dataURL}" alt="${esc(entry.name)}" onclick="openLightbox('${entry.dataURL}')">
+    <div class="thumb-name">${esc(entry.name)}</div>
+    <button class="thumb-del" title="Remove" onclick="removePhoto(this, '${esc(entry.name)}')">✕</button>
+  `;
+  thumbs.appendChild(cell);
+}
+
+function removePhoto(btn, name) {
+  btn.closest('.photo-thumb').remove();
+  photoFiles = photoFiles.filter(f => f.name !== name);
+  if (!photoFiles.length) {
+    document.getElementById('photo-empty').style.display = '';
+  }
+  markUnsaved();
+}
+
+function openLightbox(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(e) {
+  if (!e || e.target === document.getElementById('lightbox') || e.currentTarget === document.getElementById('lightbox-close')) {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightbox-img').src = '';
+  }
+}
+
+// ── Collect data ──────────────────────────────────────────────────────────
+function collect() {
+  // materials
+  const matRows = document.querySelectorAll('#mat-rows .mat-row');
+  const materials = [];
+  matRows.forEach(row => {
+    const inputs = row.querySelectorAll('input');
+    const n = inputs[0].value.trim();
+    const q = inputs[1].value.trim();
+    const c = inputs[2].value.trim();
+    if (n || q) materials.push({ name: n, qty: q, conc: c });
+  });
+  // procedure
+  const procRows = document.querySelectorAll('#proc-rows .proc-row');
+  const procedure = [];
+  procRows.forEach(row => {
+    const v = row.querySelector('input').value.trim();
+    if (v) procedure.push(v);
+  });
+
+  return {
+    title:        gv('f-title'),
+    date:         gv('f-date'),
+    student:      gv('f-student'),
+    student_num:  gv('f-stnum'),
+    class_name:   gv('f-class'),
+    objective:    gv('f-objective'),
+    hypothesis:   gv('f-hypothesis'),
+    materials,
+    procedure,
+    safety:       gv('f-safety'),
+    qualitative:  gv('f-qual'),
+    quantitative: gv('f-quant'),
+    calculations: gv('f-calc'),
+    calc_photos:  photoFiles.map(f => ({ name: f.name, dataURL: f.dataURL })),
+    conclusion:   gv('f-conclusion'),
+    errors:       gv('f-errors'),
+    improvements: gv('f-improvements'),
+    discussion:   gv('f-discussion'),
+    references:   gv('f-references'),
+  };
+}
+
+function gv(id) {
+  return document.getElementById(id)?.value.trim() || '';
+}
+
+// ── Apply data ────────────────────────────────────────────────────────────
+function apply(d) {
+  sv('f-title',        d.title        || '');
+  sv('f-date',         d.date         || '');
+  sv('f-student',      d.student      || '');
+  sv('f-stnum',        d.student_num  || '');
+  sv('f-class',        d.class_name   || '');
+  sv('f-objective',    d.objective    || '');
+  sv('f-hypothesis',   d.hypothesis   || '');
+  sv('f-safety',       d.safety       || '');
+  sv('f-qual',         d.qualitative  || '');
+  sv('f-quant',        d.quantitative || '');
+  sv('f-calc',         d.calculations || '');
+  sv('f-conclusion',   d.conclusion   || '');
+  sv('f-errors',       d.errors       || '');
+  sv('f-improvements', d.improvements || '');
+  sv('f-discussion',   d.discussion   || '');
+  sv('f-references',   d.references   || '');
+
+  // materials
+  document.getElementById('mat-rows').innerHTML = '';
+  if (d.materials && d.materials.length) {
+    d.materials.forEach(m => {
+      const item = typeof m === 'object' ? m : { name: String(m), qty: '', conc: '' };
+      addMatRow(item.name || '', item.qty || '', item.conc || '');
+    });
+  } else {
+    addMatRow();
+  }
+
+  // procedure
+  document.getElementById('proc-rows').innerHTML = '';
+  if (d.procedure && d.procedure.length) {
+    d.procedure.forEach(s => addProcRow(s));
+  } else {
+    addProcRow();
+  }
+
+  // photos
+  photoFiles = [];
+  document.getElementById('photo-thumbs').innerHTML =
+    '<p class="photo-empty" id="photo-empty">No images attached yet.</p>';
+  if (d.calc_photos && d.calc_photos.length) {
+    document.getElementById('photo-empty').style.display = 'none';
+    d.calc_photos.forEach(f => {
+      photoFiles.push(f);
+      renderThumb(f);
+    });
+  }
+}
+
+function sv(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val;
+}
+
+// ── Save as JSON (.labbook) ────────────────────────────────────────────────
+function saveJSON() {
+  const data = collect();
+  const json = JSON.stringify(data, null, 2);
+  const name = (data.title || 'labbook').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.labbook';
+  download(json, name, 'application/json');
+  markSaved(name);
+  toast('Lab book saved!', 'success');
+}
+
+// ── Open .labbook / .json ─────────────────────────────────────────────────
+function loadJSON() {
+  document.getElementById('open-input').click();
+}
+function onOpenFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      apply(data);
+      markSaved(file.name);
+      toast('Lab book opened!', 'success');
+    } catch {
+      toast('Could not read file — make sure it is a .labbook or .json file.', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ── Export RTF (opens in Word, LibreOffice, Google Docs) ──────────────────
+function exportRTF() {
+  const d    = collect();
+  const name = (d.title || 'labbook').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.rtf';
+  const rtf  = buildRTF(d);
+  download(rtf, name, 'application/rtf');
+  toast('Exported! Open the .rtf file with Microsoft Word, LibreOffice, or upload to Google Docs.', 'success');
+}
+
+function rtfEsc(str) {
+  if (!str) return '';
+  let out = '';
+  for (const ch of str) {
+    if (ch === '\\') out += '\\\\';
+    else if (ch === '{') out += '\\{';
+    else if (ch === '}') out += '\\}';
+    else if (ch === '\n') out += '\\par\n';
+    else if (ch.charCodeAt(0) > 127) out += `\\u${ch.charCodeAt(0)}?`;
+    else out += ch;
+  }
+  return out;
+}
+
+function buildRTF(d) {
+  const H1 = t => `{\\pard\\sb300\\sa80\\b\\fs34\\cf1 ${rtfEsc(t)}\\b0\\par}\n`;
+  const H2 = t => `{\\pard\\sb160\\sa40\\b\\fs24\\cf2 ${rtfEsc(t)}\\b0\\par}\n`;
+  const BODY = (t, mono) => {
+    if (!t) return '';
+    return t.split('\n').map(ln =>
+      `{\\pard\\fs22\\sa60 ${mono ? '\\f2 ' : '\\f1 '}${rtfEsc(ln)}\\par}`
+    ).join('\n') + '\n';
+  };
+  const BULLET = t => `{\\pard\\fi-200\\li400\\fs22 {\\u8226?}  ${rtfEsc(t)}\\par}\n`;
+  const NUMBERED = (i, t) => `{\\pard\\fi-300\\li500\\fs22 ${rtfEsc(`${i}.  ${t}`)}\\par}\n`;
+  const RULE = () => `{\\pard\\brdrb\\brdrs\\brdrw10\\brdrcf3 \\par}\n`;
+
+  const parts = [
+    '{\\rtf1\\ansi\\deff0',
+    '{\\fonttbl{\\f0\\froman\\fcharset0 Times New Roman;}{\\f1\\fswiss\\fcharset0 Segoe UI;}{\\f2\\fmodern\\fcharset0 Courier New;}}',
+    '{\\colortbl;\\red25\\green118\\blue210;\\red21\\green101\\blue192;\\red187\\green222\\blue251;\\red120\\green144\\blue156;}',
+    '\\margl1440\\margr1440\\margt1440\\margb1440',
+    // Title
+    `{\\pard\\qc\\sb400\\sa80\\b\\fs52\\cf1 ${rtfEsc(d.title || 'Untitled Experiment')}\\b0\\par}`,
+  ];
+
+  const meta = [['Date', d.date], ['Student', d.student], ['Class', d.class_name]];
+  if (d.student_num) meta.splice(2, 0, ['Student No.', d.student_num]);
+  meta.forEach(([lbl, val]) => {
+    if (val) parts.push(`{\\pard\\qc\\fs22\\cf4 {\\b ${rtfEsc(lbl + ':')} }  ${rtfEsc(val)}\\par}`);
+  });
+
+  parts.push('\\page');
+
+  parts.push(H1('1 · Objective / Purpose'));
+  parts.push(H2('Objective'));      parts.push(BODY(d.objective));
+  parts.push(H2('Hypothesis'));     parts.push(BODY(d.hypothesis));
+  parts.push(RULE());
+
+  parts.push(H1('2 · Materials & Reagents'));
+  parts.push(`{\\pard\\fs20\\b\\cf2 {\\f1 Material / Reagent\\tab Quantity\\tab Concentration}\\b0\\par}\n`);
+  d.materials.forEach(m => {
+    const n = m.name || '', q = m.qty || '', c = m.conc || '';
+    let row = n;
+    if (q) row += `  |  ${q}`;
+    if (c) row += `  |  ${c}`;
+    parts.push(BULLET(row));
+  });
+  parts.push(RULE());
+
+  parts.push(H1('3 · Procedure'));
+  d.procedure.forEach((s, i) => parts.push(NUMBERED(i + 1, s)));
+  parts.push(H2('Safety Precautions')); parts.push(BODY(d.safety));
+  parts.push(RULE());
+
+  parts.push(H1('4 · Results & Observations'));
+  parts.push(H2('Qualitative Observations'));       parts.push(BODY(d.qualitative));
+  parts.push(H2('Quantitative Data / Data Table')); parts.push(BODY(d.quantitative, true));
+  parts.push(RULE());
+
+  if (d.calculations || d.calc_photos.length) {
+    parts.push(H1('5 · Calculations  (Optional)'));
+    parts.push(BODY(d.calculations, true));
+    if (d.calc_photos.length) {
+      parts.push(H2('Attached Formula Photos'));
+      d.calc_photos.forEach(p => parts.push(BULLET(p.name)));
+    }
+    parts.push(RULE());
+  }
+
+  parts.push(H1('6 · Conclusion'));
+  parts.push(BODY(d.conclusion));
+  parts.push(H2('Sources of Error'));          parts.push(BODY(d.errors));
+  parts.push(H2('Suggested Improvements'));    parts.push(BODY(d.improvements));
+  parts.push(RULE());
+
+  if (d.discussion || d.references) {
+    parts.push(H1('7 · Discussion  (Optional)'));
+    parts.push(BODY(d.discussion));
+    parts.push(H2('References / Bibliography')); parts.push(BODY(d.references));
+    parts.push(RULE());
+  }
+
+  const now = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+  parts.push(`{\\pard\\qc\\sb200\\fs18\\cf4 Science Lab Book  ·  ${rtfEsc(d.title)}  ·  Generated ${now}\\par}`);
+  parts.push('}');
+  return parts.join('\n');
+}
+
+// ── Export TXT ────────────────────────────────────────────────────────────
+function exportTXT() {
+  const d    = collect();
+  const W    = 70;
+  const HR   = '─'.repeat(W);
+  const EQ   = '═'.repeat(W);
+  const sec  = t => `\n${HR}\n${t}\n${HR}`;
+  const lines = [
+    EQ, 'SCIENCE LAB BOOK', EQ,
+    `Title       : ${d.title}`,
+    `Date        : ${d.date}`,
+    `Student     : ${d.student}`,
+  ];
+  if (d.student_num) lines.push(`Student No. : ${d.student_num}`);
+  lines.push(`Class       : ${d.class_name}`, '');
+
+  lines.push(sec('OBJECTIVE / PURPOSE'));
+  lines.push(d.objective, '', 'Hypothesis:', d.hypothesis);
+
+  lines.push(sec('MATERIALS & REAGENTS'));
+  lines.push(`  ${'Material/Reagent'.padEnd(30)}  ${'Quantity'.padEnd(14)}  Concentration`);
+  lines.push('  ' + '-'.repeat(60));
+  d.materials.forEach(m => {
+    lines.push(`  ${(m.name||'').padEnd(30)}  ${(m.qty||'').padEnd(14)}  ${m.conc||''}`);
+  });
+
+  lines.push(sec('PROCEDURE'));
+  d.procedure.forEach((s, i) => lines.push(`  ${i+1}. ${s}`));
+  lines.push('', 'Safety:', d.safety);
+
+  lines.push(sec('RESULTS & OBSERVATIONS'));
+  lines.push('Qualitative:', d.qualitative, '', 'Quantitative:', d.quantitative);
+
+  lines.push(sec('CALCULATIONS  (Optional)'));
+  lines.push(d.calculations);
+  d.calc_photos.forEach(p => lines.push(`  [Photo attached: ${p.name}]`));
+
+  lines.push(sec('CONCLUSION'));
+  lines.push(d.conclusion, '', 'Sources of Error:', d.errors, '', 'Improvements:', d.improvements);
+
+  lines.push(sec('DISCUSSION  (Optional)'));
+  lines.push(d.discussion, '', 'References:', d.references);
+
+  const now = new Date().toLocaleString('en-GB');
+  lines.push('', EQ, `Exported: ${now}`, EQ);
+
+  const name = (d.title || 'labbook').replace(/[^a-z0-9]/gi, '_').toLowerCase() + '.txt';
+  download(lines.join('\n'), name, 'text/plain');
+  toast('Text file exported!', 'success');
+}
+
+// ── Clear all ─────────────────────────────────────────────────────────────
+function clearAll() {
+  if (!confirm('This will erase all content. Are you sure?')) return;
+  ['f-title','f-student','f-stnum','f-class','f-objective','f-hypothesis',
+   'f-safety','f-qual','f-quant','f-calc','f-conclusion','f-errors',
+   'f-improvements','f-discussion','f-references'].forEach(id => sv(id, ''));
+  setDateToday();
+  document.getElementById('mat-rows').innerHTML = '';
+  addMatRow();
+  document.getElementById('proc-rows').innerHTML = '';
+  addProcRow();
+  photoFiles = [];
+  document.getElementById('photo-thumbs').innerHTML =
+    '<p class="photo-empty" id="photo-empty">No images attached yet.</p>';
+  savedFileName = null;
+  markUnsaved();
+  toast('All fields cleared.', 'success');
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = '', 3800);
+}
+
+// ── Download helper ───────────────────────────────────────────────────────
+function download(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── HTML escape ───────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
